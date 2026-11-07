@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart File Organizer — Automation Suite</title>
+  <meta name="description" content="Premium Python-powered file automation suite: JPG organizer, email extractor, and webpage title scraper.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <!-- Ambient Soft Mint Background -->
+  <div class="ambient-bg" aria-hidden="true">
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+    <div class="glow-orb orb-3"></div>
+  </div>
+
+  <!-- Confetti Canvas for Celebratory Organizes -->
+  <canvas id="confetti" aria-hidden="true"></canvas>
+
+  <!-- Mobile Sidebar Backdrop Overlay -->
+  <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
+
+  <!-- Application Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="brand-icon">
+        <i class="bi bi-folder-check"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-title">Smart Organizer</span>
+        <span class="brand-badge">Automation v2.0</span>
+      </div>
+    </div>
+
+    <nav aria-label="Main Navigation">
+      <div class="nav-indicator" id="indicator"></div>
+      <a data-view="dashboard" class="nav-link active" title="Dashboard">
+        <i class="bi bi-grid-1x2-fill"></i>
+        <span>Dashboard</span>
+      </a>
+      <a data-view="organizer" class="nav-link" title="File Organizer">
+        <i class="bi bi-folder-symlink-fill"></i>
+        <span>File Organizer</span>
+      </a>
+      <a data-view="emails" class="nav-link" title="Email Extractor">
+        <i class="bi bi-envelope-at-fill"></i>
+        <span>Email Extractor</span>
+      </a>
+      <a data-view="title" class="nav-link" title="Title Scraper">
+        <i class="bi bi-globe2"></i>
+        <span>Title Scraper</span>
+      </a>
+      <a data-view="history" class="nav-link" title="Activity History">
+        <i class="bi bi-clock-history"></i>
+        <span>Activity History</span>
+      </a>
+      <a data-view="settings" class="nav-link" title="Settings">
+        <i class="bi bi-sliders2"></i>
+        <span>Settings</span>
+      </a>
+      <a data-view="about" class="nav-link" title="About Project">
+        <i class="bi bi-info-circle-fill"></i>
+        <span>About Project</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="system-status-mini">
+        <span class="pulse-dot"></span>
+        <span class="status-label">Python Active</span>
+      </div>
+      <button class="collapse-btn" id="collapse" aria-label="Toggle Sidebar Navigation" title="Collapse / Expand">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Main Content Area -->
+  <main class="main-content">
+    <!-- Top Header Bar -->
+    <header class="top-header">
+      <div class="header-left">
+        <button class="menu-toggle" id="menu" aria-label="Open Navigation Menu">
+          <i class="bi bi-list"></i>
+        </button>
+        <div class="view-breadcrumb">
+          <span class="view-tag">Task Automation</span>
+          <span class="breadcrumb-separator">/</span>
+          <span class="view-current-title" id="breadcrumbTitle">Dashboard</span>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="status-pill" id="backendStatusPill" title="Backend health check">
+          <span class="dot"></span>
+          <span id="stxt">Python backend online</span>
+        </div>
+        <div class="live-clock" id="clock" title="Current system time">--:--</div>
+      </div>
+    </header>
+
+    <!-- 1. DASHBOARD VIEW -->
+    <section id="dashboard" class="view active">
+      <div class="view-header">
+        <div>
+          <h1>Automation Dashboard</h1>
+          <p class="sub">Monitor file scans, organized media volume, and recent automated workflows.</p>
+        </div>
+      </div>
+
+      <!-- Real Statistic Counters -->
+      <div class="stats-grid">
+        <div class="stat-card s1">
+          <div class="stat-icon-wrap">
+            <i class="bi bi-files"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Files Scanned</span>
+            <b class="stat-number" data-key="scanned">0</b>
+            <span class="stat-hint">From most recent scan</span>
+          </div>
+        </div>
+
+        <div class="stat-card s2">
+          <div class="stat-icon-wrap">
+            <i class="bi bi-file-earmark-image"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">JPG Files Found</span>
+            <b class="stat-number" data-key="found">0</b>
+            <span class="stat-hint">Target organization files</span>
+          </div>
+        </div>
+
+        <div class="stat-card s3">
+          <div class="stat-icon-wrap">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Files Moved</span>
+            <b class="stat-number" data-key="moved">0</b>
+            <span class="stat-hint">All-time successful moves</span>
+          </div>
+        </div>
+
+        <div class="stat-card s4">
+          <div class="stat-icon-wrap">
+            <i class="bi bi-hdd-stack"></i>
+          </div>
+          <div class="stat-content">
+            <span class="stat-label">Storage Organized</span>
+            <b class="stat-number" data-key="bytes" data-fmt="size">0 B</b>
+            <span class="stat-hint">Total volume transferred</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Action Cards -->
+      <h2 class="section-title"><i class="bi bi-lightning-charge-fill"></i> Quick Actions</h2>
+      <div class="action-tiles-grid">
+        <a class="action-tile" data-go="organizer">
+          <div class="tile-icon-wrap">
+            <i class="bi bi-images"></i>
+          </div>
+          <div class="tile-info">
+            <b>Organize JPG Photos</b>
+            <span>Safely move JPG files to an organized directory.</span>
+          </div>
+          <i class="bi bi-arrow-right tile-arrow"></i>
+        </a>
+
+        <a class="action-tile" data-go="emails">
+          <div class="tile-icon-wrap">
+            <i class="bi bi-envelope-at"></i>
+          </div>
+          <div class="tile-info">
+            <b>Extract Email Addresses</b>
+            <span>Pull and de-duplicate emails from any text file.</span>
+          </div>
+          <i class="bi bi-arrow-right tile-arrow"></i>
+        </a>
+
+        <a class="action-tile" data-go="title">
+          <div class="tile-icon-wrap">
+            <i class="bi bi-globe2"></i>
+          </div>
+          <div class="tile-info">
+            <b>Scrape Webpage Title</b>
+            <span>Fetch HTML title metadata and record it to file.</span>
+          </div>
+          <i class="bi bi-arrow-right tile-arrow"></i>
+        </a>
+      </div>
+
+      <!-- Recent Activity Section -->
+      <div class="card recent-activity-card">
+        <div class="card-header-between">
+          <div class="card-title-group">
+            <h3><i class="bi bi-activity"></i> Recent Activity</h3>
+            <p class="sub-small">Live logs from data/activity.json</p>
+          </div>
+          <a class="text-link" data-go="history">
+            <span>View full history</span>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+        <div class="recent-feed-list" id="recent"></div>
+      </div>
+
+      <!-- Safety & Architecture Card -->
+      <div class="card safety-banner-card">
+        <div class="safety-grid">
+          <div class="safety-item">
+            <i class="bi bi-shield-check"></i>
+            <div>
+              <b>Non-Destructive</b>
+              <p>Files are only removed from source after successful move.</p>
+            </div>
+          </div>
+          <div class="safety-item">
+            <i class="bi bi-copy"></i>
+            <div>
+              <b>Zero Overwrite</b>
+              <p>Duplicates automatically renamed as <code>name (1).jpg</code>.</p>
+            </div>
+          </div>
+          <div class="safety-item">
+            <i class="bi bi-funnel"></i>
+            <div>
+              <b>Strict Scope</b>
+              <p>Only top-level JPGs moved. PNG, PDF, and subfolders remain untouched.</p>
+            </div>
+          </div>
+          <div class="safety-item">
+            <i class="bi bi-journal-text"></i>
+            <div>
+              <b>Atomic Logging</b>
+              <p>Every operation and failure is recorded in JSON history.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. FILE ORGANIZER VIEW -->
+    <section id="organizer" class="view">
+      <div class="view-header">
+        <div>
+          <h1>JPG File Organizer</h1>
+          <p class="sub">Safely moves <code>.jpg</code> files (case-insensitive) from source to destination with complete audit trails.</p>
+        </div>
+      </div>
+
+      <!-- Path Selection Inputs -->
+      <div class="grid2">
+        <div class="card pick-card" id="srcCard">
+          <label for="src" class="input-label">
+            <i class="bi bi-folder"></i> Source Folder
+          </label>
+          <div class="input-group">
+            <input type="text" id="src" placeholder="Paste source folder path or browse..." spellcheck="false" autocomplete="off">
+            <button type="button" class="btn btn-secondary" data-browse="src" title="Browse for source folder">
+              <i class="bi bi-folder2-open"></i>
+              <span>Browse</span>
+            </button>
+          </div>
+          <div class="validation-hint" id="srcHint"></div>
+        </div>
+
+        <div class="card pick-card" id="dstCard">
+          <label for="dst" class="input-label">
+            <i class="bi bi-folder-plus"></i> Destination Folder
+          </label>
+          <div class="input-group">
+            <input type="text" id="dst" placeholder="Paste destination folder path or browse..." spellcheck="false" autocomplete="off">
+            <button type="button" class="btn btn-secondary" data-browse="dst" title="Browse for destination folder">
+              <i class="bi bi-folder2-open"></i>
+              <span>Browse</span>
+            </button>
+          </div>
+          <div class="validation-hint" id="dstHint">Created automatically if it doesn't exist.</div>
+        </div>
+      </div>
+
+      <!-- Scope Policy Banner -->
+      <div class="card scope-banner">
+        <div class="scope-pill">
+          <i class="bi bi-file-earmark-image"></i>
+          <span>.jpg &amp; .jpeg</span>
+        </div>
+        <p class="scope-text">
+          <b>Active Filter:</b> Only JPG files will be organized. Non-JPG files (PNG, PDF, DOCX, ZIP) and subfolders are never touched.
+        </p>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="actions-row">
+        <button type="button" class="btn btn-secondary btn-lg" id="previewBtn">
+          <i class="bi bi-eye"></i>
+          <span>Preview Files</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-lg" id="organizeBtn" disabled>
+          <i class="bi bi-arrow-right-circle"></i>
+          <span>Organize Files</span>
+        </button>
+      </div>
+
+      <!-- Real-time Progress Card -->
+      <div class="card progress-card" id="progressCard" hidden>
+        <div class="progress-top">
+          <div class="progress-info">
+            <span class="progress-badge">Moving in progress</span>
+            <span class="progress-current" id="pCur">Starting operation…</span>
+          </div>
+          <b class="progress-percent" id="pPct">0%</b>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" id="bar"></div>
+        </div>
+        <div class="progress-meta">
+          <span id="pDone"><i class="bi bi-list-check"></i> 0 / 0 completed</span>
+          <span class="meta-ok" id="pOk"><i class="bi bi-check-circle-fill"></i> 0 moved</span>
+          <span class="meta-bad" id="pBad"><i class="bi bi-x-circle-fill"></i> 0 failed</span>
+        </div>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card result-card" id="resultCard" hidden>
+        <div class="result-success-content">
+          <div class="success-icon-wrap">
+            <svg class="success-svg" viewBox="0 0 52 52">
+              <circle cx="26" cy="26" r="24" class="svg-circle" />
+              <path d="M14 27l8 8 16-17" class="svg-check" />
+            </svg>
+          </div>
+          <h2 id="resTitle" class="result-heading">FILES ORGANIZED SUCCESSFULLY!</h2>
+          <p id="resLine" class="result-summary"></p>
+          <div class="result-dest-badge" id="resDest"></div>
+          <div id="resFails" class="result-fails-wrap"></div>
+          <div class="result-actions">
+            <button type="button" class="btn btn-secondary" data-go="history">
+              <i class="bi bi-clock-history"></i>
+              <span>View Activity History</span>
+            </button>
+            <button type="button" class="btn btn-primary" id="moreBtn">
+              <i class="bi bi-arrow-repeat"></i>
+              <span>Organize More Files</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview Files Table Card -->
+      <div class="card preview-card" id="previewCard">
+        <div class="card-header-between">
+          <div class="card-title-group">
+            <h3><i class="bi bi-list-columns"></i> Scanned Files Preview</h3>
+            <span class="file-counter-pill" id="count"></span>
+          </div>
+        </div>
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Format</th>
+                <th>File Size</th>
+                <th>Current Path</th>
+                <th>Validation Status</th>
+              </tr>
+            </thead>
+            <tbody id="rows"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="empty">
+          <div class="empty-icon"><i class="bi bi-images"></i></div>
+          <h4>No files to preview</h4>
+          <p>Select a source directory and click <b>Preview Files</b> to inspect eligible JPG files before moving.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. EMAIL EXTRACTOR VIEW -->
+    <section id="emails" class="view">
+      <div class="view-header">
+        <div>
+          <h1>Email Address Extractor</h1>
+          <p class="sub">Uses Python regular expressions to extract, sanitize, and de-duplicate email addresses from any <code>.txt</code> file.</p>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <label for="emIn" class="input-label">
+            <i class="bi bi-file-earmark-text"></i> Input .txt File Path
+          </label>
+          <input type="text" id="emIn" placeholder="e.g. C:\data\contacts.txt" spellcheck="false">
+          <span class="input-hint">Path to a local plain text file (up to 20 MB).</span>
+        </div>
+
+        <div class="card">
+          <label for="emOut" class="input-label">
+            <i class="bi bi-file-earmark-arrow-down"></i> Output File Path (Optional)
+          </label>
+          <input type="text" id="emOut" placeholder="Default: <name>_emails.txt in same folder" spellcheck="false">
+          <span class="input-hint">Where unique emails will be saved if you choose to save.</span>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn btn-secondary btn-lg" id="emFind">
+          <i class="bi bi-search"></i>
+          <span>Find Emails</span>
+        </button>
+        <button type="button" class="btn btn-primary btn-lg" id="emSave" disabled>
+          <i class="bi bi-download"></i>
+          <span>Save to File</span>
+        </button>
+        <button type="button" class="btn btn-secondary btn-lg" id="emCopyAll" disabled title="Copy all found emails">
+          <i class="bi bi-clipboard"></i>
+          <span>Copy All</span>
+        </button>
+      </div>
+
+      <!-- Email Results Card -->
+      <div class="card results-box-card">
+        <div class="card-header-between">
+          <div class="card-title-group">
+            <h3><i class="bi bi-envelope-check"></i> Extracted Email Addresses</h3>
+            <span class="file-counter-pill" id="emCount"></span>
+          </div>
+        </div>
+        <div class="empty-state" id="emEmpty">
+          <div class="empty-icon"><i class="bi bi-envelope-open"></i></div>
+          <h4>No email addresses extracted</h4>
+          <p>Provide the path to a <code>.txt</code> file and click <b>Find Emails</b> to begin scanning.</p>
+        </div>
+        <div class="chips-container" id="emList"></div>
+      </div>
+    </section>
+
+    <!-- 4. TITLE SCRAPER VIEW -->
+    <section id="title" class="view">
+      <div class="view-header">
+        <div>
+          <h1>Webpage Title Scraper</h1>
+          <p class="sub">Uses Python <code>requests</code> and <code>HTMLParser</code> to extract HTML titles and record them to file.</p>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <div class="card">
+          <label for="tUrl" class="input-label">
+            <i class="bi bi-link-45deg"></i> Target Website URL
+          </label>
+          <input type="url" id="tUrl" placeholder="https://example.com" spellcheck="false">
+          <span class="input-hint">Must begin with <code>http://</code> or <code>https://</code>.</span>
+        </div>
+
+        <div class="card">
+          <label for="tOut" class="input-label">
+            <i class="bi bi-file-earmark-text"></i> Output File Path (Optional)
+          </label>
+          <input type="text" id="tOut" placeholder="Default: data/page_titles.txt" spellcheck="false">
+          <span class="input-hint">Titles are appended to this file without overwriting.</span>
+        </div>
+      </div>
+
+      <div class="actions-row">
+        <button type="button" class="btn btn-primary btn-lg" id="tGo">
+          <i class="bi bi-cloud-arrow-down-fill"></i>
+          <span>Scrape &amp; Save Title</span>
+        </button>
+      </div>
+
+      <div class="card title-result-card" id="tCard" hidden>
+        <div class="title-meta-badge">Scraped Page Title</div>
+        <h2 id="tRes" class="scraped-title-text"></h2>
+        <div class="title-save-dest">
+          <i class="bi bi-check-circle-fill"></i>
+          <span id="tSaved"></span>
+        </div>
+        <div class="title-actions">
+          <button type="button" class="btn btn-secondary btn-sm" id="tCopyBtn">
+            <i class="bi bi-clipboard"></i>
+            <span>Copy Title</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. ACTIVITY HISTORY VIEW -->
+    <section id="history" class="view">
+      <div class="card-header-between view-header-actions">
+        <div>
+          <h1>Activity History</h1>
+          <p class="sub">Audit log of file movements, email extractions, and scraped titles from <code>data/activity.json</code>.</p>
+        </div>
+        <div class="header-action-btns">
+          <button type="button" class="btn btn-secondary" id="refreshHist" title="Reload History">
+            <i class="bi bi-arrow-clockwise"></i>
+            <span>Refresh</span>
+          </button>
+          <button type="button" class="btn btn-danger" id="clearHist" title="Clear all stored logs">
+            <i class="bi bi-trash3"></i>
+            <span>Clear History</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- History Table Card -->
+      <div class="card history-table-card">
+        <div class="history-filter-bar">
+          <div class="search-input-wrap">
+            <i class="bi bi-search"></i>
+            <input type="text" id="hSearch" placeholder="Filter activity by task, source, destination, or status..." autocomplete="off">
+          </div>
+        </div>
+
+        <div class="table-container">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Task Type</th>
+                <th>Date &amp; Time</th>
+                <th>Source Path / URL</th>
+                <th>Destination Path</th>
+                <th>Items Moved</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="hrows"></tbody>
+          </table>
+        </div>
+        <div class="empty-state" id="hempty">
+          <div class="empty-icon"><i class="bi bi-clock-history"></i></div>
+          <h4>No activity records yet</h4>
+          <p>Organized files, extracted emails, and scraped titles will be recorded here automatically.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. SETTINGS VIEW -->
+    <section id="settings" class="view">
+      <div class="view-header">
+        <div>
+          <h1>Application Settings</h1>
+          <p class="sub">Configure user experience preferences, interface animations, and storage settings.</p>
+        </div>
+      </div>
+
+      <div class="settings-stack">
+        <!-- Theme Preference Card -->
+        <div class="card setting-card">
+          <div class="setting-info">
+            <b>Design System Palette</b>
+            <p class="sub-small">Default Soft Mint + Sage Green aesthetic optimized for clean readability and natural contrast.</p>
+            <div class="palette-swatches">
+              <span class="swatch" style="background:#F3FAF4;" title="Main Background: #F3FAF4"></span>
+              <span class="swatch" style="background:#EAF4EC;" title="Secondary Background: #EAF4EC"></span>
+              <span class="swatch" style="background:#398653;" title="Primary Green: #398653"></span>
+              <span class="swatch" style="background:#245C3A;" title="Forest Green: #245C3A"></span>
+              <span class="swatch" style="background:#A8D5B5;" title="Light Sage: #A8D5B5"></span>
+              <span class="swatch" style="background:#DCEFE0;" title="Pale Mint: #DCEFE0"></span>
+            </div>
+          </div>
+          <div class="setting-control">
+            <span class="badge badge-ok"><i class="bi bi-check-circle-fill"></i> Soft Mint (Active)</span>
+          </div>
+        </div>
+
+        <!-- Animation Motion Switch -->
+        <div class="card setting-card">
+          <div class="setting-info">
+            <b>Reduce Animations &amp; Motion</b>
+            <p class="sub-small">Disables confetti, hover transforms, card tilt, and keyframe transitions for improved accessibility.</p>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="optMotion">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Sidebar Collapse Preference -->
+        <div class="card setting-card">
+          <div class="setting-info">
+            <b>Compact Sidebar Layout</b>
+            <p class="sub-small">Keeps the navigation sidebar in compact icon-only mode by default on desktop screens.</p>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" id="optSidebar">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Safety Confirmation (Always Enabled) -->
+        <div class="card setting-card">
+          <div class="setting-info">
+            <b>Confirm Before Moving Files</b>
+            <p class="sub-small">Permanent security guard. Requires user confirmation before any file movement is executed on disk.</p>
+          </div>
+          <div class="setting-control">
+            <label class="toggle-switch">
+              <input type="checkbox" checked disabled title="Permanently enabled for file safety">
+              <span class="toggle-slider disabled"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Clear Activity History -->
+        <div class="card setting-card">
+          <div class="setting-info">
+            <b>Reset Activity History</b>
+            <p class="sub-small">Clears all logged history items from <code>data/activity.json</code>. Does not delete any files on your system.</p>
+          </div>
+          <div class="setting-control">
+            <button type="button" class="btn btn-danger btn-sm" id="clearHistSettings">
+              <i class="bi bi-trash3"></i>
+              <span>Clear History Data</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Application Info -->
+        <div class="card app-info-card">
+          <h3><i class="bi bi-cpu"></i> System Environment</h3>
+          <div class="info-specs-grid">
+            <div class="spec-item">
+              <span class="spec-label">Application</span>
+              <span class="spec-value">Smart File Organizer Premium</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Version</span>
+              <span class="spec-value">2.0.0 (CodeAlpha Task 3)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Backend Engine</span>
+              <span class="spec-value">Flask 3.1+ (Python REST API)</span>
+            </div>
+            <div class="spec-item">
+              <span class="spec-label">Core Modules</span>
+              <span class="spec-value">os, pathlib, shutil, datetime, re, requests</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. ABOUT PROJECT VIEW -->
+    <section id="about" class="view">
+      <div class="view-header">
+        <div>
+          <h1>About Smart File Organizer</h1>
+          <p class="sub">CodeAlpha Python Development Internship — Task 3: Task Automation with Python Scripts</p>
+        </div>
+      </div>
+
+      <div class="about-grid">
+        <div class="card about-card-main">
+          <h3><i class="bi bi-layers-fill"></i> Project Overview</h3>
+          <p>
+            The <b>Smart File Organizer</b> is an enterprise-grade automation suite designed to streamline routine file management,
+            information extraction, and web content scraping. Designed with a strict safety-first philosophy, every operation guarantees
+            data integrity, atomic file moves, duplicate conflict resolution, and persistent audit logs.
+          </p>
+          <div class="feature-badges-row">
+            <span class="feature-pill"><i class="bi bi-shield-lock-fill"></i> Non-destructive Moves</span>
+            <span class="feature-pill"><i class="bi bi-arrow-repeat"></i> Automatic Renaming</span>
+            <span class="feature-pill"><i class="bi bi-file-earmark-check-fill"></i> Strict JPG Scope</span>
+            <span class="feature-pill"><i class="bi bi-file-code-fill"></i> Regex Parsing</span>
+            <span class="feature-pill"><i class="bi bi-globe-americas"></i> HTTP Scraping</span>
+          </div>
+        </div>
+
+        <div class="card tech-card">
+          <h3><i class="bi bi-code-square"></i> Automation Architecture</h3>
+          <ul class="tech-list">
+            <li>
+              <div class="tech-badge">os</div>
+              <div><b>Filesystem Inspection:</b> Validates read/write permissions, verifies paths, and scans directory entries.</div>
+            </li>
+            <li>
+              <div class="tech-badge">pathlib</div>
+              <div><b>Path Mathematics:</b> Resolves absolute paths, inspects case-insensitive extensions, and generates unique collision-free names.</div>
+            </li>
+            <li>
+              <div class="tech-badge">shutil</div>
+              <div><b>Safe File Movement:</b> Executes non-destructive atomic transfers via <code>shutil.move()</code> without overwriting.</div>
+            </li>
+            <li>
+              <div class="tech-badge">re</div>
+              <div><b>Regular Expressions:</b> Sanitizes, matches, and extracts valid email addresses from text files up to 20 MB.</div>
+            </li>
+            <li>
+              <div class="tech-badge">requests</div>
+              <div><b>HTTP Streaming:</b> Safely fetches webpage HTML streams with timeout controls and custom User-Agent headers.</div>
+            </li>
+            <li>
+              <div class="tech-badge">Flask</div>
+              <div><b>REST API:</b> Asynchronous worker threads with live polling for multi-file operations.</div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Confirmation Modal -->
+  <div class="modal-backdrop" id="modal" hidden>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-icon-badge">
+          <i class="bi bi-question-circle-fill"></i>
+        </div>
+        <div class="modal-titles">
+          <h3>Confirm File Organization</h3>
+          <p class="sub-small">Please review the operation details before proceeding.</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p id="modalText" class="modal-summary-text"></p>
+        <div class="modal-notice">
+          <i class="bi bi-info-circle-fill"></i>
+          <span>Only JPG files will be moved. Any duplicate names in the destination folder are automatically renamed. Original files remain intact if an individual move encounters an error.</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="mNo">Cancel</button>
+        <button type="button" class="btn btn-primary" id="mYes">
+          <i class="bi bi-arrow-right-circle"></i>
+          <span>Move Files Now</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear History Confirmation Modal -->
+  <div class="modal-backdrop" id="clearModal" hidden>
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <div class="modal-icon-badge error-badge">
+          <i class="bi bi-exclamation-triangle-fill"></i>
+        </div>
+        <div class="modal-titles">
+          <h3>Clear Activity History?</h3>
+          <p class="sub-small">This action cannot be undone.</p>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="modal-summary-text">
+          Are you sure you want to clear all activity records from <code>data/activity.json</code>?
+          This only clears audit records and does not alter any files on your storage.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="clearModalNo">Cancel</button>
+        <button type="button" class="btn btn-danger" id="clearModalYes">
+          <i class="bi bi-trash3"></i>
+          <span>Clear History</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Center -->
+  <div class="toast-center" id="toasts" aria-live="polite"></div>
+
+  <!-- Main JavaScript File -->
+  <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
